@@ -538,6 +538,37 @@ unsigned int checkPost(ChatBot *bot, Post *post) {
         free (message);
         return 0;
     }*/
+    else if (postMatchesTagFilter (post) && (recentlyReported (post->postID, bot) == 0))
+    {
+        const char *notifString = getNotificationString(bot);
+        sprintf (messageBuf, "bad tags in body");
+        const size_t maxMessage = strlen(messageBuf) + strlen(post->title) + strlen(notifString) + strlen(REPORT_HEADER) + 256;
+        char *message = malloc(maxMessage);
+        char *notif = getNotificationString(bot);
+        snprintf(message, maxMessage,
+                 REPORT_HEADER " (%s): [%s](http://stackoverflow.com/%s/%lu) (likelihood %d) %s",
+                 messageBuf, post->title, post->isAnswer ? "a" : "q", post->postID, likelihood, notif);
+        free(notif);
+        
+        postMessage(bot->room, message);
+        
+        if (bot->latestReports[REPORT_MEMORY-1]) {
+            free(bot->latestReports[REPORT_MEMORY-1]->post);
+            free(bot->latestReports[REPORT_MEMORY-1]);
+        }
+        int i = REPORT_MEMORY;
+        while(--i) {
+            bot->latestReports[i] = bot->latestReports[i-1];
+        }
+        Report *report = malloc(sizeof(Report));
+        report->post = post;
+        report->confirmation = -1;
+        //report->likelihood = likelihood;
+        bot->latestReports[0] = report;
+        free(message);
+        free (messageBuf);
+        return 0;
+    }
     else {
         deletePost(post);
         free (messageBuf);
