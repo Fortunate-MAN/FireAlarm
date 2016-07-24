@@ -70,3 +70,69 @@ unsigned char postMatchesFilter(Post *post, Filter *filter, unsigned *outStart, 
             exit(EXIT_FAILURE);
     }
 }
+
+unsigned postMatchesTagFilter (Post *post)
+{
+    char *tagList;
+    
+    asprintf (&tagList,
+              "licensing; copyright; ownership; blogs; open-source; jobs; apple; driver; drivers; privacy; spam; protection; search-engine; stack-overflow");
+              
+    pthread_mutex_lock(&bot->room->clientLock);
+    CURL *curl = bot->room->client->curl;
+    
+    checkCURL(curl_easy_setopt(curl, CURLOPT_HTTPGET, 1));
+    OutBuffer buffer;
+    buffer.data = NULL;
+    checkCURL(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer));
+    
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
+    
+    unsigned max = 256;
+    char request[max];
+    snprintf(request, max,
+             "https://api.stackexchange.com/2.2/search?site=stackoverflow&order=desc&sort=activity&tagged=%s&key="API_KEY, tagList);
+    
+    curl_easy_setopt(curl, CURLOPT_URL, request);
+    
+    checkCURL(curl_easy_perform(curl));
+    
+    checkCURL(curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""));
+    
+    
+    pthread_mutex_unlock(&bot->room->clientLock);
+    
+    cJSON *json = cJSON_Parse(buffer.data);
+    
+    free(buffer.data);
+    
+    if (!json || cJSON_GetObjectItem(json, "error_id")) {
+        if (json) {
+            cJSON_Delete(json);
+        }
+        puts("Error fetching post!");
+        return NULL;
+    }
+    
+    cJSON *backoff;
+    if ((backoff = cJSON_GetObjectItem(json, "backoff"))) {
+        char *str;
+        asprintf(&str, "Recieved backoff: %d", backoff->valueint);
+        postMessage(bot->room, str);
+        free(str);
+    }
+    
+    unsigned totalPosts = cJSON_GetArraySize (json);
+    
+    for (int i = 0; i < totalPosts; i ++)
+    {
+        if (cJSON_GetObjectItem (json, "question_id")->valueint == post->postID)
+        {
+            cJSON_Delete (json);
+            return 1;
+        }
+    }
+    
+    cJSON_Delete (json);
+    return 0;
+}
