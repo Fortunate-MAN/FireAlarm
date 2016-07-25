@@ -33,11 +33,11 @@ typedef struct {
 
 
 Filter *createFilter(const char *desc, const char *filter, FilterType type, unsigned truePositives, unsigned falsePositives);
-unsigned postMatchestagFilter (Post *post);
+unsigned postMatchestagFilter (ChatBot *bot, Post *post);
 
 //Returns whether or not the specified post matchis the specified filter.
 //On return, *outStart is the index of the start of the match.
 //*outEnd is the index of the end of the match.
-unsigned char postMatchesFilter(Post *post, Filter *filter, unsigned *outStart, unsigned *outEnd);
+unsigned char postMatchesFilter(ChatBot *bot, Post *post, Filter *filter, unsigned *outStart, unsigned *outEnd);
 
 #endif /* LQDetector_h */
