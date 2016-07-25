@@ -464,13 +464,13 @@ unsigned int checkPost(ChatBot *bot, Post *post) {
         }
     }
     
-    if (bot->modes->lengthFilter)
+    /*if (bot->modes->lengthFilter)
     {
         if (strlen (post->body) < 200)
         {
             bodyLength = (unsigned)strlen (post->body);
         }
-    }
+    }*/
     
     if (likelihood > THRESHOLD && (recentlyReported (post->postID, bot) == 0)) {
         const char *notifString = getNotificationString(bot);
@@ -538,7 +538,7 @@ unsigned int checkPost(ChatBot *bot, Post *post) {
         free (message);
         return 0;
     }*/
-    else if (postMatchesTagFilter (post) && (recentlyReported (post->postID, bot) == 0))
+    /*else if (postMatchesTagFilter (post) && (recentlyReported (post->postID, bot) == 0))
     {
         const char *notifString = getNotificationString(bot);
         sprintf (messageBuf, "bad tags in body");
@@ -573,7 +573,7 @@ unsigned int checkPost(ChatBot *bot, Post *post) {
         deletePost(post);
         free (messageBuf);
         return 1;
-    }
+    }*/
 }
 
 void confirmPost(ChatBot *bot, Post *post, unsigned char confirmed) {
