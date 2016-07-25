@@ -11,6 +11,48 @@
 		"truePositives":	29,
 		"falsePositives":	0
 	}, {
+		"description":	"[tag:licensing]",
+		"expression":	"licensing",
+		"type":	3,
+		"truePositives":	20,
+		"falsePositives":	0
+	}, {
+		"description": "bad tags",
+		"expression": "",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
+		"description": "[tag:copyright]",
+		"expression": "copyright",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
+		"description": "[tag:ownership]",
+		"expression": "ownership",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
+		"description": "[tag:blogs]",
+		"expression": "blogs",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
+		"description": "[tag:open-source]",
+		"expression": "open-source",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
+		"description": "[tag:jobs]",
+		"expression": "jobs",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
 		"description": "bad tags",
 		"expression": "",
 		"type": 		3,
