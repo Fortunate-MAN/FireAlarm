@@ -51,7 +51,7 @@ static unsigned char matchRegexFilter(Post *post, Filter *f, unsigned *outStart,
     return 1;
 }
 
-unsigned char postMatchesFilter(Post *post, Filter *filter, unsigned *outStart, unsigned *outEnd) {
+unsigned char postMatchesFilter(ChatBot *bot, Post *post, Filter *filter, unsigned *outStart, unsigned *outEnd) {
     switch (filter->type) {
         case FILTER_TEXT:
             ;char *start = strstr(post->body, filter->filter);
@@ -73,7 +73,7 @@ unsigned char postMatchesFilter(Post *post, Filter *filter, unsigned *outStart, 
     }
 }
 
-unsigned postMatchesTagFilter (Post *post)
+unsigned postMatchesTagFilter (ChatBot *bot, Post *post)
 {
     char *tagList;
     
