@@ -33,6 +33,7 @@ typedef struct {
 
 
 Filter *createFilter(const char *desc, const char *filter, FilterType type, unsigned truePositives, unsigned falsePositives);
+unsigned postMatchestagFilter (Post *post);
 
 //Returns whether or not the specified post matchis the specified filter.
 //On return, *outStart is the index of the start of the match.
