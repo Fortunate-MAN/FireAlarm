@@ -833,3 +833,57 @@ char *getUsernameByID (ChatBot *bot, unsigned long userID)
     
     return NULL;
 }
+
+char **getTagsByID (ChatBot *bot, unsigned long postID)
+{
+    pthread_mutex_lock(&bot->room->clientLock);
+    CURL *curl = bot->room->client->curl;
+    
+    checkCURL(curl_easy_setopt(curl, CURLOPT_HTTPGET, 1));
+    OutBuffer buffer;
+    buffer.data = NULL;
+    checkCURL(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer));
+    
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
+    
+    unsigned max = 256;
+    char request [max];
+    
+    snprintf (request, max,
+              "https://api.stackexchange.com/2.2/questions/%lu?order=desc&sort=activity&site=stackoverflow&filter=%s",
+              postID, bot->apiFilter);
+              
+    curl_easy_setopt(curl, CURLOPT_URL, request);
+    
+    checkCURL(curl_easy_perform(curl));
+    
+    checkCURL(curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""));
+    
+    
+    pthread_mutex_unlock(&bot->room->clientLock);
+    
+    cJSON *json = cJSON_Parse(buffer.data);
+    
+    free(buffer.data);
+    
+    if (!json || cJSON_GetObjectItem(json, "error_id")) {
+        if (json) {
+            cJSON_Delete(json);
+        }
+        puts("Error fetching post!");
+        return 0;
+    }
+    
+    cJSON *backoff;
+    if ((backoff = cJSON_GetObjectItem(json, "backoff"))) {
+        char *str;
+        asprintf(&str, "Recieved backoff: %d", backoff->valueint);
+        postMessage(bot->room, str);
+        free(str);
+    }
+    
+    char **tags = cJSON_GetArrayItem (json, "tags");
+    
+    cJSON_Delete (json);
+    return tags;
+}
