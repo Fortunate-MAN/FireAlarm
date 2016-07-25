@@ -65,6 +65,8 @@ unsigned char postMatchesFilter(Post *post, Filter *filter, unsigned *outStart, 
             return matchRegexFilter(post, filter, outStart, outEnd);
         case FILTER_SHORTBODY:
             return strlen(post->body) < 500;
+        case FILTER_TAG:
+            return postMatchesTagFilter (post);
         default:
             fprintf(stderr, "Invalid filter type %d\n", filter->type);
             exit(EXIT_FAILURE);
