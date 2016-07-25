@@ -11,6 +11,12 @@
 		"truePositives":	29,
 		"falsePositives":	0
 	}, {
+		"description": "bad tags",
+		"expression": "",
+		"type": 		3,
+		"truePositives":	20,
+		"falsePositives": 	0
+	}, {
 		"description":	"plz",
 		"expression":	"plz",
 		"type":	0,
