@@ -18,7 +18,8 @@
 typedef enum {
     FILTER_TEXT = 0,
     FILTER_REGEX = 1,
-    FILTER_SHORTBODY = 2
+    FILTER_SHORTBODY = 2,
+    FILTER_TAG = 3
 }FilterType;
 
 typedef struct {
