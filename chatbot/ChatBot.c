@@ -449,7 +449,7 @@ unsigned int checkPost(ChatBot *bot, Post *post) {
     {
         for (int i = 0; i < bot->filterCount; i++) {
             unsigned start, end;
-            if (postMatchesFilter(post, bot->filters[i], &start, &end)) {
+            if (postMatchesFilter(bot, post, bot->filters[i], &start, &end)) {
                 
                 const char *desc = bot->filters[i]->desc;
                 messageBuf = realloc(messageBuf, strlen(messageBuf) + strlen(desc) + 16);
