@@ -66,7 +66,7 @@ unsigned char postMatchesFilter(ChatBot *bot, Post *post, Filter *filter, unsign
         case FILTER_SHORTBODY:
             return strlen(post->body) < 500;
         case FILTER_TAG:
-            return postMatchesTagFilter (post);
+            return matchTagFilter (bot, post, filter);
         default:
             fprintf(stderr, "Invalid filter type %d\n", filter->type);
             exit(EXIT_FAILURE);
@@ -136,5 +136,20 @@ unsigned postMatchesTagFilter (ChatBot *bot, Post *post)
     }
     
     cJSON_Delete (json);
+    return 0;
+}
+
+unsigned matchTagFilter (ChatBot *bot, Post *post, Filter *filter)
+{
+    char **tags = getTagsByID (bot, post->postID);
+    
+    for (int i = 0; i < 5; i ++)
+    {
+        if (strcmp (tags [i], filter->filter) == 0)
+        {
+            return 1;
+        }
+    }
+    
     return 0;
 }
