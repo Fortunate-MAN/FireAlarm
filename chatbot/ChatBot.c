@@ -882,7 +882,9 @@ char **getTagsByID (ChatBot *bot, unsigned long postID)
         free(str);
     }
     
-    char **tags = cJSON_GetArrayItem (json, "tags");
+    //char **tags = cJSON_GetArrayItem (json, "tags");
+    
+    char **tags = cJSON_GetObjectItem (json, "tags")->valuestring;
     
     cJSON_Delete (json);
     return tags;
