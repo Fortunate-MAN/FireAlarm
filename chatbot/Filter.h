@@ -34,6 +34,7 @@ typedef struct {
 
 Filter *createFilter(const char *desc, const char *filter, FilterType type, unsigned truePositives, unsigned falsePositives);
 unsigned postMatchestagFilter (ChatBot *bot, Post *post);
+unsigned matchRegexFilter (ChatBot *bot, Post *post, Filter *filter);
 
 //Returns whether or not the specified post matchis the specified filter.
 //On return, *outStart is the index of the start of the match.
