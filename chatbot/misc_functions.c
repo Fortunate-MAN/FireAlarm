@@ -194,3 +194,18 @@ int isTagProgrammingRelated (char *tag)
     return 0;
 }
 
+int postHasTags (Post *post, char *tag)
+{
+    char **tags = getTagsByID (post->postID);
+    
+    for (int i = 0; i < 5; i ++)
+    {
+        if (strcmp (tags [i], tag) == 0)
+        {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
