@@ -209,3 +209,18 @@ int postHasTags (Post *post, char *tag)
     return 0;
 }
 
+unsigned isTagInFilter (ChatBot *bot, char *tag)
+{
+    Filter **filters = bot->filters;
+    
+    for (int i = 0; i < bot->totalFilters; i ++)
+    {
+        if (strcmp (filters [i]->filter, tag) == 0)
+        {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
