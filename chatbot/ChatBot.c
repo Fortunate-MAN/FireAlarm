@@ -169,6 +169,99 @@ void analyzeReports(ChatBot *bot) {
         }
     }
     
+    //Now coming to analyzing the tag filter
+    char **tagsCaught;
+    int j = 0;
+    trueOccurences = 0;
+    falseOccurences = 0;
+    totalOccurences = 0;
+    
+    for (i = 0; i < bot->filterCount; i ++)
+    {
+        if (bot->filters [i]->type == 3)
+        {
+            tagsCaught [j] = bot->filters [i]->filter;
+            j++;
+        }
+    }
+    
+    //Now looking for patterns of more bad tags which can be added to the list
+    j = 0;
+    int k = 0;
+    int totalNewTags = 0;
+    char **newTags;
+    int tps [50];
+    int fps [50];
+    int tpRate [50];
+    for (i = 0; i < REPORT_MEMORY; i ++)
+    {
+        report = reports [i];
+        
+        char **postTags = getTagsByID (bot, report->post->postID);
+        
+        for (j = 0; j < 5; j ++)
+        {
+            char *currentTag = postTags [i];
+            
+            if (!isTagProgrammingRelated (currentTag) && !isTagInFilter (bot, currentTag))
+            {
+                for (k = 0; k < REPORT_MEMORY; k ++)
+                {
+                    Report *currentReport = reports [k];
+                    
+                    if (currentReport->messageID != report->messageID)
+                    {
+                        char **currentPostTags = getTagsByID (bot, currentReport->postID)
+                        
+                        if (postHasTags (currentReport->post, currentTag))
+                        {
+                            if (currentReport->confirmation)
+                            {
+                                trueOccurences ++;
+                            }
+                            else if (!currentReport->confirmation)
+                            {
+                                falseOccurences ++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if ((trueOccurences - falseOccurences) >= 15)
+            {
+                trueOccurences = 0;
+                falseOccurences = 0;
+                newTags [totalNewTags] = currentTag;
+                tps [totalNewTags] = trueOccurences;
+                fps [totalNewTags] = falseOccurences;
+                tpRate [totalNewTags] = trueOccurences / falseOccurences;
+                totalNewTags ++;
+            }
+            if (trueOccurences > 0 || falseOccurences > 0)
+            {
+                trueOccurences = 0;
+                falseOccurences = 0;
+            }
+        }
+    }
+    
+    Filter **filters = bot->filters;
+    puts("            Tags    TP rate      TPs     FPs\n");
+    for (i = 0; i < totalNewTags; i ++)
+    {
+        char *desc = malloc (sizeof (char) * 50);
+        
+        sprintf (desc, "[tag:%s]", newTags [i]);
+        
+        filters = realloc (filters, ++bot->filterCount * sizeof (Filter *));
+        filters [bot->filterCount - 1] = createFilter (desc, newTags [i], 3, tps [i], fps [i]);
+        
+        printf("%16s\t%4f\t%4d\t%4d\n", newTags [i], tpRate [i], tps [i], fps [i]);
+    }
+    
+    free (desc);
+    return;
 }
 
 static Report **parseReports(ChatBot *bot, cJSON *json) {
