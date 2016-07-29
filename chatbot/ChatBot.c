@@ -982,3 +982,83 @@ char **getTagsByID (ChatBot *bot, unsigned long postID)
     cJSON_Delete (json);
     return tags;
 }
+
+Filter *getFilterByTag (ChatBot *bot, char *tag)
+{
+    if (!isTagInFilter (bot, tag))
+    {
+        return NULL;
+    }
+    
+    Filter **filters = bot->filters;
+    
+    for (int i = 0; i < bot->totalFilters; i ++)
+    {
+        Filter *filter = filters [i];
+        
+        if (filter->type == 3)
+        {
+            if (strcmp (filter->filter, tag) == 0)
+            {
+                return filter;
+            }
+        }
+    }
+    
+    return NULL;
+}
+
+Filter **getTagsCaughtInPost (ChatBot *bot, Post *post)
+{
+    Filter *filters = bot->filters;
+    char **tags = getTagsByID (bot, post->postID);
+    char **tagsCaught;
+    
+    int k = 0;
+    for (int i = 0; i < bot->totalFilters; i ++)
+    {
+        Filter *filter = filters [i];
+        
+        if (filter->type == 3)
+        {
+            for (int j = 0; j < 5; j ++)
+            {
+                if (strcmp (tags [j], filter->filter) == 0)
+                {
+                    tagsCaught [k] = filter->filter;
+                    k ++;
+                }
+            }
+        }
+    }
+    
+    Filter **filtersCaught;
+    
+    for (i = 0; i < 5; i ++)
+    {
+        filtersCaught [i] = getFilterByTag (bot, tagsCaught [i]);
+    }
+    
+    return filtersCaught;
+}
+
+void editFilter (ChatBot *bot, Post *post, int confirm)
+{
+    Filters **filtersCaught = getTagsCaughtInPost (bot, post);
+    
+    for (int i = 0; i < 5; i ++)
+    {
+        Filter *filter = filtersCaught [i];
+        
+        if (confirm)
+        {
+            filter->truePositives ++;
+        }
+        else if (!confirm)
+        {
+            filter->falsePositives ++;
+        }
+    }
+     
+    return;
+}
