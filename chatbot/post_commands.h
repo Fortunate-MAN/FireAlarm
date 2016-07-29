@@ -76,7 +76,7 @@ unsigned int confirm(RunningCommand *command, void *ctx, unsigned char confirm) 
         
         bot->latestReports[0]->confirmation = confirm;
         post = bot->latestReports[0]->post;
-        editFilter (bot, post);
+        editFilter (bot, post, confirm);
     }
     else {
         Report *report = reportWithMessage(bot, command->message->replyID);
@@ -101,7 +101,7 @@ unsigned int confirm(RunningCommand *command, void *ctx, unsigned char confirm) 
             
             report->confirmation = confirm;
             post = report->post;
-            editFilter (bot, post);
+            editFilter (bot, post, confirm);
         }
         else {
             postReply(bot->room, "That isn't a report.", command->message);
